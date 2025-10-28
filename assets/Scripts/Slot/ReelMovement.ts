@@ -33,10 +33,23 @@ export class ReelMovement extends Component {
         this.symbols.forEach(symbol => {
             TweenSystem.instance.ActionManager.removeAllActionsFromTarget(symbol);
         });
-        for (let i = 0; i < this.symbols.length; i++) {
-            tween(this.symbols[i])
-                .to(0.6, { position: new Vec3(0, this.visibleY[i], 0) }, { easing: 'fade' })
-                .start();
+        for (let i = 0; i < this.visibleY.length; i++) {
+            let closestSymbol: Node | null = null;
+            let minDistance = Infinity;
+
+            for (const symbol of this.symbols) {
+                const distance = Math.abs(symbol.position.y - this.visibleY[i]);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestSymbol = symbol;
+                }
+            }
+            if (closestSymbol) {
+                tween(closestSymbol)
+                    .to(0.4, { position: new Vec3(0, this.visibleY[i], 0) }, { easing: 'bounceOut' })
+                    .start();
+            }
+
         }
     }
 
