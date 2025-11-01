@@ -7,11 +7,12 @@ export class ReelMovement extends Component {
     private minY: number = -334;
     private maxY: number = 501;
     private duration: number = 1;
+    private spacingY: number = 167;
     private symbols: Node[] = [];
     @property([SpriteFrame])
     private spriteSymbolsFrames: SpriteFrame[] = [];
     private spinning: boolean = false;
-    private visibleY = [-167,0,167,334,501];
+    private visibleY = 167;
 
     start () {
         this.symbols = this.node.children;
@@ -29,27 +30,25 @@ export class ReelMovement extends Component {
 
     reelEndMovement() {
         this.spinning = false;
-        this.maxY = 501;
         this.symbols.forEach(symbol => {
             TweenSystem.instance.ActionManager.removeAllActionsFromTarget(symbol);
+
         });
-        for (let i = 0; i < this.visibleY.length; i++) {
-            let closestSymbol: Node | null = null;
-            let minDistance = Infinity;
+        this.stopSymbol();
+    }
 
-            for (const symbol of this.symbols) {
-                const distance = Math.abs(symbol.position.y - this.visibleY[i]);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestSymbol = symbol;
-                }
-            }
-            if (closestSymbol) {
-                tween(closestSymbol)
-                    .to(0.4, { position: new Vec3(0, this.visibleY[i], 0) }, { easing: 'bounceOut' })
-                    .start();
-            }
+    stopSymbol(){
+        let newY: number = 668;
+        let duration = 0.7;
+        const orderedSymbols = this.symbols.slice().sort((a, b) => b.position.y - a.position.y);
 
+        for (let i = 0; i < orderedSymbols.length; i++) {
+            const symbol = orderedSymbols[i];
+            newY = newY-this.spacingY;
+
+            tween(symbol)
+                .to(duration, { position: new Vec3(0, newY, 0) }, { easing: 'elasticOut' })
+                .start();
         }
     }
 
