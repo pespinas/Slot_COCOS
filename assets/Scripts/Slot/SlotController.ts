@@ -3,25 +3,17 @@ import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { ReelMovement } from './ReelMovement';
 const { ccclass, property } = _decorator;
 
-/**
- * Predefined variables
- * Name = SlotController
- * DateTime = Sat Oct 18 2025 12:03:38 GMT+0200 (hora de verano de Europa central)
- * Author = pespinas
- * FileBasename = SlotController.ts
- * FileBasenameNoExtension = SlotController
- * URL = db://assets/Scripts/Slot/SlotController.ts
- * ManualUrl = https://docs.cocos.com/creator/3.4/manual/en/
- *
- */
- 
 @ccclass('SlotController')
 export class SlotController extends Component {
 
     @property({ type: Prefab })
-    symbolPref = null;
+    symbolPref: Prefab | null = null;
+    @property({ type: Button })
+    spinButton: Button | null = null;
     @property({ type: [Node] })
     masks = [];
+
+    private countEnds: number = 0;
 
     private reels: ReelMovement[] = [];
 
@@ -34,18 +26,30 @@ export class SlotController extends Component {
                 const reelMovement = newReel.getComponent(ReelMovement);
                 if (reelMovement) {
                     this.reels.push(reelMovement);
+                    newReel.on('end-reel', this.reelsEnd, this);
                 }
             }
         })
 
     }
 
+    private reelsEnd(){
+        this.countEnds++;
+        if (this.countEnds == this.masks.length) {
+            this.scheduleOnce(() => {
+                this.spinButton.interactable = true;
+            }, 0.3);
+
+            this.countEnds = 0;
+        }
+}
+
     onSpinClick() {
         this.reels.forEach((reel, index)=> {
+            this.spinButton.interactable = false;
             this.scheduleOnce(() => {
                 reel.reelStartMovement();
             }, index * 0.4);
-
         });
 
     }

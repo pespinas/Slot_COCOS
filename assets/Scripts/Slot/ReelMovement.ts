@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3,  TweenSystem, Sprite, SpriteFrame, macro} from 'cc';
+import { _decorator, Component, Node, tween, Vec3,  TweenSystem, Sprite, SpriteFrame} from 'cc';
 const { ccclass, property } = _decorator;
  
 @ccclass('ReelMovement')
@@ -35,6 +35,7 @@ export class ReelMovement extends Component {
 
         });
         this.stopSymbol();
+        this.eventEndReel();
     }
 
     stopSymbol(){
@@ -50,7 +51,13 @@ export class ReelMovement extends Component {
                 .to(duration, { position: new Vec3(0, newY, 0) }, { easing: 'elasticOut' })
                 .start();
         }
+
     }
+
+    private eventEndReel() {
+        this.node.emit('end-reel');
+    }
+
 
     moveSymbol(symbol: Node, index: number) {
         const startPosition = symbol.position.clone();
