@@ -12,7 +12,7 @@ export class ReelMovement extends Component {
     @property([SpriteFrame])
     private spriteSymbolsFrames: SpriteFrame[] = [];
     private spinning: boolean = false;
-    private visibleY = 167;
+    private winSymbols: String[];
 
     start () {
         this.symbols = this.node.children;
@@ -46,7 +46,10 @@ export class ReelMovement extends Component {
         for (let i = 0; i < orderedSymbols.length; i++) {
             const symbol = orderedSymbols[i];
             newY = newY-this.spacingY;
-
+            if (i > 1) {
+                const sprite = symbol.getComponent(Sprite);
+                this.winSymbols.push(sprite.spriteFrame.name);
+            }
             tween(symbol)
                 .to(duration, { position: new Vec3(0, newY, 0) }, { easing: 'elasticOut' })
                 .start();

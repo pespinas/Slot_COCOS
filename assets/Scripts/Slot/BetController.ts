@@ -1,24 +1,23 @@
 
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component,EventTouch, Node, Button, Label } from 'cc';
 const { ccclass, property } = _decorator;
  
 @ccclass('BetController')
 export class BetController extends Component {
 
     @property({ type: Button })
-    plusButton: Button | null = null;
+    plusButton: Button;
     @property({ type: Button })
-    minusButton: Button | null = null;
+    minusButton: Button;
     @property({ type: Label })
-    labelBet: Label | null = null;
+    labelBet: Label;
+
     private labelValue: number;
     private nPosition: number;
     private betValue: number[] = [5, 10, 15, 20, 25, 30];
 
-
-
     start () {
-        this.labelValue = Number(this.labelBet.getComponent(Label).string);
+        this.labelValue = Number(this.labelBet.string);
         this.updateButtonBetStart(this.labelValue);
         this.nPosition = this.betValue.indexOf(this.labelValue);
     }
@@ -26,21 +25,15 @@ export class BetController extends Component {
     private updateButtonBetStart(bet: number){
         this.plusButton.interactable = bet < this.betValue[this.betValue.length - 1];
         this.minusButton.interactable = bet > this.betValue[0];
-    }
-
-    plusBet(){
-        const nextPos = this.nPosition + 1;
-        const nextBet = this.betValue[nextPos];
-        this.nPosition = nextPos;
-        this.labelBet.getComponent(Label).string = nextBet + '';
-        this.updateButtonBetStart(nextBet);
 
     }
-    minusBet(){
-        const nextPos = this.nPosition - 1;
+
+    buttonBet(event: EventTouch, customEventData: string){
+        const nextPos = this.nPosition + Number(customEventData);
         const nextBet = this.betValue[nextPos];
+
         this.nPosition = nextPos;
-        this.labelBet.getComponent(Label).string = nextBet + '';
+        this.labelBet.string = String(nextBet);
         this.updateButtonBetStart(nextBet);
     }
 }
