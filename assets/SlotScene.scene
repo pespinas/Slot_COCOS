@@ -26,7 +26,7 @@
     "_prefab": null,
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 55
+      "__id__": 54
     },
     "_id": "d2bb4cd5-4254-4469-9c68-472e40999045"
   },
@@ -151,9 +151,6 @@
       },
       {
         "__id__": 53
-      },
-      {
-        "__id__": 54
       }
     ],
     "_prefab": null,
@@ -1809,7 +1806,6 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "betController": null,
     "symbolPref": {
       "__uuid__": "ec0e552c-aea4-44fc-9820-abd81c281fb3",
       "__expectedType__": "cc.Prefab"
@@ -1859,35 +1855,24 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_id": "c9vFlK16lHsJltw3nNQZra"
-  },
-  {
-    "__type__": "e9ac5cJlW5AGZlKx5RzeTly",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 4
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "_id": "f0CW//uJxAhacioTFSNc9e"
+    "_id": "44Z8Fg6hFJGoqXcJjDx8C4"
   },
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 56
+      "__id__": 55
     },
     "shadows": {
-      "__id__": 57
+      "__id__": 56
     },
     "_skybox": {
-      "__id__": 58
+      "__id__": 57
     },
     "fog": {
-      "__id__": 59
+      "__id__": 58
     },
     "octree": {
-      "__id__": 60
+      "__id__": 59
     }
   },
   {
