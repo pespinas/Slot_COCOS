@@ -4,15 +4,16 @@ const { ccclass, property } = _decorator;
 @ccclass('ReelMovement')
 export class ReelMovement extends Component {
 
+    @property([SpriteFrame])
+    private spriteSymbolsFrames: SpriteFrame[] = [];
+
     private minY: number = -334;
     private maxY: number = 501;
     private duration: number = 1;
     private spacingY: number = 167;
     private symbols: Node[] = [];
-    @property([SpriteFrame])
-    private spriteSymbolsFrames: SpriteFrame[] = [];
     private spinning: boolean = false;
-    private winSymbols: String[];
+    private winSymbols: string[]= [];
 
     start () {
         this.symbols = this.node.children;
@@ -20,6 +21,7 @@ export class ReelMovement extends Component {
 
     reelStartMovement() {
         this.spinning = true;
+        this.winSymbols = [];
         this.symbols.slice().reverse().forEach((symbol, index) => {
             this.moveSymbol(symbol, index)
         })
@@ -32,10 +34,10 @@ export class ReelMovement extends Component {
         this.spinning = false;
         this.symbols.forEach(symbol => {
             TweenSystem.instance.ActionManager.removeAllActionsFromTarget(symbol);
-
         });
         this.stopSymbol();
         this.eventEndReel();
+
     }
 
     stopSymbol(){
@@ -58,9 +60,8 @@ export class ReelMovement extends Component {
     }
 
     private eventEndReel() {
-        this.node.emit('end-reel');
+        this.node.emit('end-reel',this.winSymbols);
     }
-
 
     moveSymbol(symbol: Node, index: number) {
         const startPosition = symbol.position.clone();
@@ -76,7 +77,7 @@ export class ReelMovement extends Component {
                     //mueve los simbolos para arriba
                     symbol.setPosition(symbol.position.x, this.maxY, symbol.position.z);
                     const randomIndex = Math.floor(Math.random() * 6);
-                    const spriteFrame = this.spriteSymbolsFrames[randomIndex];
+                    const spriteFrame = this.spriteSymbolsFrames[0];
                     const sprite = symbol.getComponent(Sprite) || symbol.addComponent(Sprite);
                     sprite.spriteFrame = spriteFrame;
                     moveStep();

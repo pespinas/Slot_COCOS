@@ -12,6 +12,7 @@ export class BetController extends Component {
     @property({ type: Label })
     labelBet: Label;
 
+    private tier: number;
     private labelValue: number;
     private nPosition: number;
     private betValue: number[] = [5, 10, 15, 20, 25, 30];
@@ -25,7 +26,14 @@ export class BetController extends Component {
     private updateButtonBetStart(bet: number){
         this.plusButton.interactable = bet < this.betValue[this.betValue.length - 1];
         this.minusButton.interactable = bet > this.betValue[0];
+        this.unlockPrizes(bet);
+    }
 
+    unlockPrizes(bet: number){
+        this.tier = 2;
+        if (bet <= 10){ this.tier= 1;}
+        if (bet >= 25){ this.tier= 3;}
+        this.node.emit('reels-tier', this.tier);
     }
 
     buttonBet(event: EventTouch, customEventData: string){

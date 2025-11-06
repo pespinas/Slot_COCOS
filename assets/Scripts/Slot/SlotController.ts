@@ -17,6 +17,7 @@ export class SlotController extends Component {
     private countEnds: number = 0;
     private prizesController: PrizesController
     private reels: ReelMovement[] = [];
+    private resultReelsSymbols: string[][] = [];
 
     start () {
         this.prizesController = this.getComponent(PrizesController);
@@ -35,16 +36,18 @@ export class SlotController extends Component {
 
     }
 
-    private reelsEnd(){
+    private reelsEnd(winSymbols: string[]){
         this.countEnds++;
+        this.resultReelsSymbols[this.countEnds] = winSymbols;
         if (this.countEnds == this.masks.length) {
+            this.node.emit('reels-finished', this.resultReelsSymbols);
             this.scheduleOnce(() => {
                 this.spinButton.interactable = true;
             }, 0.3);
 
             this.countEnds = 0;
         }
-}
+    }
 
     onSpinClick() {
         this.reels.forEach((reel, index)=> {
@@ -53,7 +56,7 @@ export class SlotController extends Component {
                 reel.reelStartMovement();
             }, index * 0.4);
         });
-
+        this.prizesController.newSpinValue();
     }
 
     getSymbol() {
