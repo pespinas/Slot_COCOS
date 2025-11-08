@@ -13,20 +13,28 @@ export class PrizesController extends Component {
     private tier: number;
 
     start () {
-        this.node.on('reels-finished', this.checkPrizes, this);
+        this.node.on('reels-finished', this.checkPrizesOrder, this);
         this.node.on('reels-tier', this.checkTier, this);
     }
 
     private checkTier(tier: number) {
         this.tier = tier;
     }
+    private checkPrizesOrder(resultReelsSymbols: string[][]){
+        const result = [
+            [resultReelsSymbols[0][0], resultReelsSymbols[1][0], resultReelsSymbols[2][0]],
+            [resultReelsSymbols[0][1], resultReelsSymbols[1][1], resultReelsSymbols[2][1]],
+            [resultReelsSymbols[0][2], resultReelsSymbols[1][2], resultReelsSymbols[2][2]]
+        ];
+        this.checkPrizes(result);
+    }
 
-    private checkPrizes(resultReelsSymbols: string[][]) {
-        this.result += this.resultLined(resultReelsSymbols[2][0], resultReelsSymbols[2][1], resultReelsSymbols[2][2]);
+    private checkPrizes(results: string[][]) {
+        this.result += this.resultLined(results[1][0], results[1][1], results[1][2]);
         if (this.tier>1) {
-            this.result += this.resultLined(resultReelsSymbols[1][0], resultReelsSymbols[1][1], resultReelsSymbols[1][2]);
+            this.result += this.resultLined(results[0][0], results[0][1], results[0][2]);
             if(this.tier>2){
-                this.result += this.resultLined(resultReelsSymbols[3][0], resultReelsSymbols[3][1], resultReelsSymbols[3][2]);
+                this.result += this.resultLined(results[2][0], results[2][1], results[2][2]);
             }
         }
         this.labelValue.string = String(this.result);
@@ -39,7 +47,7 @@ export class PrizesController extends Component {
 
     private resultLined(s1: string, s2: string, s3: string) {
         if(s1 == s2 && s2 == s3){
-            const p = Number([s1.length - 1]);
+            const p = Number(s1[2]);
             return this.priceSimbols[p];
         }
         return 0;

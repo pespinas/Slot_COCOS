@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, tween, Vec3,  TweenSystem, Sprite, SpriteFrame} from 'cc';
+import {SymbolsRNG} from "db://assets/Scripts/Slot/SymbolsRNG";
 const { ccclass, property } = _decorator;
  
 @ccclass('ReelMovement')
@@ -76,8 +77,8 @@ export class ReelMovement extends Component {
                 .call(() => {
                     //mueve los simbolos para arriba
                     symbol.setPosition(symbol.position.x, this.maxY, symbol.position.z);
-                    const randomIndex = Math.floor(Math.random() * 6);
-                    const spriteFrame = this.spriteSymbolsFrames[0];
+                    const randomIndex = SymbolsRNG.randomSymbol();
+                    const spriteFrame = this.spriteSymbolsFrames[randomIndex];
                     const sprite = symbol.getComponent(Sprite) || symbol.addComponent(Sprite);
                     sprite.spriteFrame = spriteFrame;
                     moveStep();

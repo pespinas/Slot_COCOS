@@ -37,8 +37,8 @@ export class SlotController extends Component {
     }
 
     private reelsEnd(winSymbols: string[]){
-        this.countEnds++;
         this.resultReelsSymbols[this.countEnds] = winSymbols;
+        this.countEnds++;
         if (this.countEnds == this.masks.length) {
             this.node.emit('reels-finished', this.resultReelsSymbols);
             this.scheduleOnce(() => {
@@ -46,6 +46,7 @@ export class SlotController extends Component {
             }, 0.3);
 
             this.countEnds = 0;
+            this.resultReelsSymbols = [];
         }
     }
 
