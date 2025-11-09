@@ -2,6 +2,7 @@
 import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { ReelMovement } from './ReelMovement';
 import { PrizesController } from './PrizesController';
+import {BetController} from "db://assets/Scripts/Slot/BetController";
 const { ccclass, property } = _decorator;
 
 @ccclass('SlotController')
@@ -11,16 +12,24 @@ export class SlotController extends Component {
     symbolPref: Prefab;
     @property({ type: Button })
     spinButton: Button;
+    @property({ type: Button })
+    plusButton: Button;
+    @property({ type: Button })
+    minusButton: Button;
     @property({ type: [Node] })
     masks = [];
 
     private countEnds: number = 0;
     private prizesController: PrizesController
+    private betController: BetController
     private reels: ReelMovement[] = [];
     private resultReelsSymbols: string[][] = [];
+    private minuState: boolean;
+    private plusState: boolean;
 
     start () {
         this.prizesController = this.getComponent(PrizesController);
+        this.betController = this.getComponent(BetController);
         this.masks.forEach(mask => {
             if (mask && this.symbolPref) {
                 const newReel = instantiate (this.symbolPref);
@@ -42,7 +51,7 @@ export class SlotController extends Component {
         if (this.countEnds == this.masks.length) {
             this.node.emit('reels-finished', this.resultReelsSymbols);
             this.scheduleOnce(() => {
-                this.spinButton.interactable = true;
+                this.setButtosInteractable(true);
             }, 0.3);
 
             this.countEnds = 0;
@@ -51,15 +60,33 @@ export class SlotController extends Component {
     }
 
     onSpinClick() {
-        this.reels.forEach((reel, index)=> {
-            this.spinButton.interactable = false;
-            this.scheduleOnce(() => {
-                reel.reelStartMovement();
-            }, index * 0.4);
-        });
-        this.prizesController.newSpinValue();
+        if (!this.betController.spinBalanceUpdate()){
+            console.log("no hay saldo");
+        }
+        else{
+            this.reels.forEach((reel, index)=> {
+                this.scheduleOnce(() => {
+                    reel.reelStartMovement();
+                }, index * 0.4);
+            });
+            this.setButtosInteractable(false);
+            this.prizesController.newSpinValue();
+        }
     }
+    private setButtosInteractable(state: boolean) {
+        this.spinButton.interactable = state;
+        if(!state){
+            this.minuState = this.minusButton.interactable;
+            this.plusState = this.plusButton.interactable;
 
+            this.plusButton.interactable = state;
+            this.minusButton.interactable = state;
+        }
+        else{
+            this.plusButton.interactable = this.plusState;
+            this.minusButton.interactable = this.minuState;
+        }
+    }
     getSymbol() {
         const allChildren: Node[] = [];
         this.masks.forEach(mask => {

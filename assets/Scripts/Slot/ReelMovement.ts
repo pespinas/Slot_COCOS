@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3,  TweenSystem, Sprite, SpriteFrame} from 'cc';
+import { _decorator, Component, Node, tween, Graphics, Vec3,  TweenSystem, Sprite, SpriteFrame} from 'cc';
 import {SymbolsRNG} from "db://assets/Scripts/Slot/SymbolsRNG";
 const { ccclass, property } = _decorator;
  
@@ -30,7 +30,6 @@ export class ReelMovement extends Component {
             this.reelEndMovement();
         }, 4)
     }
-
     reelEndMovement() {
         this.spinning = false;
         this.symbols.forEach(symbol => {
@@ -38,7 +37,6 @@ export class ReelMovement extends Component {
         });
         this.stopSymbol();
         this.eventEndReel();
-
     }
 
     stopSymbol(){
@@ -57,7 +55,6 @@ export class ReelMovement extends Component {
                 .to(duration, { position: new Vec3(0, newY, 0) }, { easing: 'elasticOut' })
                 .start();
         }
-
     }
 
     private eventEndReel() {

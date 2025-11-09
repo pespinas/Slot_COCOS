@@ -7,6 +7,8 @@ export class PrizesController extends Component {
 
     @property({ type: Label })
     labelValue: Label;
+    @property({ type: Label })
+    labelBalance: Label;
 
     private priceSimbols: number[] = [0, 2, 5, 8, 10, 15, 20];
     private result: number = 0;
@@ -27,6 +29,7 @@ export class PrizesController extends Component {
             [resultReelsSymbols[0][2], resultReelsSymbols[1][2], resultReelsSymbols[2][2]]
         ];
         this.checkPrizes(result);
+
     }
 
     private checkPrizes(results: string[][]) {
@@ -38,6 +41,13 @@ export class PrizesController extends Component {
             }
         }
         this.labelValue.string = String(this.result);
+        this.balanceUpdate(Number(this.result));
+    }
+
+    private balanceUpdate(win: number){
+        const currentBalance = Number(this.labelBalance.string);
+        const newBalance = currentBalance + win;
+        this.labelBalance.string = String(newBalance);
     }
 
     newSpinValue(){

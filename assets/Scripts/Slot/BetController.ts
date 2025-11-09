@@ -11,6 +11,8 @@ export class BetController extends Component {
     minusButton: Button;
     @property({ type: Label })
     labelBet: Label;
+    @property({ type: Label })
+    labelBalance: Label;
 
     private tier: number;
     private labelValue: number;
@@ -21,9 +23,10 @@ export class BetController extends Component {
         this.labelValue = Number(this.labelBet.string);
         this.updateButtonBetStart(this.labelValue);
         this.nPosition = this.betValue.indexOf(this.labelValue);
+
     }
 
-    private updateButtonBetStart(bet: number){
+     updateButtonBetStart(bet: number){
         this.plusButton.interactable = bet < this.betValue[this.betValue.length - 1];
         this.minusButton.interactable = bet > this.betValue[0];
         this.unlockPrizes(bet);
@@ -43,5 +46,18 @@ export class BetController extends Component {
         this.nPosition = nextPos;
         this.labelBet.string = String(nextBet);
         this.updateButtonBetStart(nextBet);
+    }
+
+    spinBalanceUpdate(){
+        const currentBet = Number(this.labelBet.string);
+        const currentBalance = Number(this.labelBalance.string);
+        const newBalance = currentBalance - currentBet;
+        if (newBalance >= 0) {
+            this.labelBalance.string = String(newBalance);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
