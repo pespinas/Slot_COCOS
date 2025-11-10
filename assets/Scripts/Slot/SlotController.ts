@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Button, EditBox } from 'cc';
 import { ReelMovement } from './ReelMovement';
 import { PrizesController } from './PrizesController';
 import {BetController} from "db://assets/Scripts/Slot/BetController";
@@ -18,6 +18,8 @@ export class SlotController extends Component {
     minusButton: Button;
     @property({ type: [Node] })
     masks = [];
+    @property({ type: EditBox })
+    cheat: EditBox;
 
     private countEnds: number = 0;
     private prizesController: PrizesController
@@ -66,7 +68,7 @@ export class SlotController extends Component {
         else{
             this.reels.forEach((reel, index)=> {
                 this.scheduleOnce(() => {
-                    reel.reelStartMovement();
+                    reel.reelStartMovement(this.isCheating());
                 }, index * 0.4);
             });
             this.setButtosInteractable(false);
@@ -92,6 +94,16 @@ export class SlotController extends Component {
         this.masks.forEach(mask => {
             allChildren.push(...mask.children);
         });
+    }
+
+    isCheating(){
+        const checkCheat = Number(this.cheat?.string ?? 0);
+        if(checkCheat>0 && checkCheat<7){
+            return checkCheat;
+        }
+        else{
+            return 0;
+        }
     }
 }
 

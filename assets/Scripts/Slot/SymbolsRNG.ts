@@ -14,9 +14,9 @@ export class SymbolsRNG extends Component {
 
     }
     static randomSymbol(){
-        this.ramdomValue = Math.floor(Math.random() * 101);
+        this.ramdomValue = Math.floor(Math.random() * 100);
         let cum = 0;
-       for (let i = 0; i < this.probabilities.length; i++) {
+        for (let i = 0; i < this.probabilities.length; i++) {
             cum += this.probabilities[i];
             if(this.ramdomValue < cum)
             {

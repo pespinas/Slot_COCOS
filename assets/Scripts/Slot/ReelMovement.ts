@@ -20,11 +20,11 @@ export class ReelMovement extends Component {
         this.symbols = this.node.children;
     }
 
-    reelStartMovement() {
+    reelStartMovement(cheat: number) {
         this.spinning = true;
         this.winSymbols = [];
         this.symbols.slice().reverse().forEach((symbol, index) => {
-            this.moveSymbol(symbol, index)
+            this.moveSymbol(symbol, index, cheat)
         })
         this.scheduleOnce(() => {
             this.reelEndMovement();
@@ -61,7 +61,7 @@ export class ReelMovement extends Component {
         this.node.emit('end-reel',this.winSymbols);
     }
 
-    moveSymbol(symbol: Node, index: number) {
+    moveSymbol(symbol: Node, index: number, cheat: number) {
         const startPosition = symbol.position.clone();
         const moveStep = () => {
             const distanceToTravel = symbol.position.y - this.minY;
@@ -74,8 +74,14 @@ export class ReelMovement extends Component {
                 .call(() => {
                     //mueve los simbolos para arriba
                     symbol.setPosition(symbol.position.x, this.maxY, symbol.position.z);
-                    const randomIndex = SymbolsRNG.randomSymbol();
-                    const spriteFrame = this.spriteSymbolsFrames[randomIndex];
+                    let spriteFrame: SpriteFrame;
+                    if (cheat>0){
+                        spriteFrame = this.spriteSymbolsFrames[cheat];
+                    }
+                    else{
+                        const randomIndex = SymbolsRNG.randomSymbol();
+                        spriteFrame = this.spriteSymbolsFrames[randomIndex];
+                    }
                     const sprite = symbol.getComponent(Sprite) || symbol.addComponent(Sprite);
                     sprite.spriteFrame = spriteFrame;
                     moveStep();

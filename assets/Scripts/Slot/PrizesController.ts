@@ -10,7 +10,7 @@ export class PrizesController extends Component {
     @property({ type: Label })
     labelBalance: Label;
 
-    private priceSimbols: number[] = [0, 2, 5, 8, 10, 15, 20];
+    private priceSimbols: number[] = [0, 4, 6, 8, 12, 19, 30];
     private result: number = 0;
     private tier: number;
 
