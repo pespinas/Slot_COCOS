@@ -29,6 +29,7 @@ export class SlotController extends Component {
     private resultReelsSymbols: string[][] = [];
     private minuState: boolean;
     private plusState: boolean;
+    private bonusPending: boolean = false;
 
     start () {
         this.prizesController = this.getComponent(PrizesController);
@@ -43,7 +44,7 @@ export class SlotController extends Component {
                     this.reels.push(reelMovement);
                     reelMovement.initReel(this.maskIndex);
                     this.maskIndex++;
-                    newReel.on('end-reel', this.reelsEnd);
+                    newReel.on('end-reel', this.reelsEnd, this);
                 }
             }
         })
@@ -55,13 +56,22 @@ export class SlotController extends Component {
         });
     }
 
-    private reelsEnd(winSymbols: string[], isBonus: boolean = false){
+    bonusStart(){
+        this.bonusPending = true;
+        this.setButtosInteractable(false);
+        this.scheduleOnce(() => {
+            this.onSpinClick(6, false);
+        }, 1);
+    }
+    private reelsEnd(winSymbols: string[]){
         this.resultReelsSymbols[this.countEnds] = winSymbols;
         this.countEnds++;
-        if (this.countEnds == this.masks.length && !isBonus) {
+        if (this.countEnds == this.masks.length) {
             this.node.emit('reels-finished', this.resultReelsSymbols);
             this.scheduleOnce(() => {
-                this.setButtosInteractable(true);
+                if (!this.bonusPending){
+                    this.setButtosInteractable(true);
+                }
             }, 0.3);
             this.countEnds = 0;
             this.saveRefresh(this.resultReelsSymbols);
@@ -75,10 +85,12 @@ export class SlotController extends Component {
             console.log("no hay saldo");
         }
         else{
+
             this.reels.forEach((reel, index)=> {
                 this.scheduleOnce(() => {
                     if(cheat == 6){
                         reel.reelStartMovement(cheat);
+                        this.bonusPending = false;
                     }
                     else{
                         reel.reelStartMovement(this.isCheating());
@@ -92,8 +104,10 @@ export class SlotController extends Component {
     private setButtosInteractable(state: boolean,) {
         this.spinButton.interactable = state;
         if(!state){
-            this.minuState = this.minusButton.interactable;
-            this.plusState = this.plusButton.interactable;
+            if(!this.bonusPending){
+                this.minuState = this.minusButton.interactable;
+                this.plusState = this.plusButton.interactable;
+            }
 
             this.plusButton.interactable = state;
             this.minusButton.interactable = state;

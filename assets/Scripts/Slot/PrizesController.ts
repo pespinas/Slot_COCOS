@@ -68,9 +68,8 @@ export class PrizesController extends Component {
 
     private bonusWin(){
         const slot = this.getComponent(SlotController);
-        this.scheduleOnce(() => {
-            slot.onSpinClick(6, false);
-        }, 1);
+        slot.bonusStart();
+
     }
 }
 
