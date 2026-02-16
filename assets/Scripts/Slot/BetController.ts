@@ -48,7 +48,8 @@ export class BetController extends Component {
         this.updateButtonBetStart(nextBet);
     }
 
-    spinBalanceUpdate(){
+    spinBalanceUpdate(updateBalance: boolean = true){
+        if (!updateBalance) return true;
         const currentBet = Number(this.labelBet.string);
         const currentBalance = Number(this.labelBalance.string);
         const newBalance = currentBalance - currentBet;

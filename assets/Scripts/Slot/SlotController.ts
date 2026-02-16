@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Prefab, instantiate, Button, EditBox } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Button, EditBox,JsonAsset,resources,sys } from 'cc';
 import { ReelMovement } from './ReelMovement';
 import { PrizesController } from './PrizesController';
 import {BetController} from "db://assets/Scripts/Slot/BetController";
@@ -22,6 +22,7 @@ export class SlotController extends Component {
     cheat: EditBox;
 
     private countEnds: number = 0;
+    private maskIndex: number = 0;
     private prizesController: PrizesController
     private betController: BetController
     private reels: ReelMovement[] = [];
@@ -40,42 +41,55 @@ export class SlotController extends Component {
                 const reelMovement = newReel.getComponent(ReelMovement);
                 if (reelMovement) {
                     this.reels.push(reelMovement);
-                    newReel.on('end-reel', this.reelsEnd, this);
+                    reelMovement.initReel(this.maskIndex);
+                    this.maskIndex++;
+                    newReel.on('end-reel', this.reelsEnd);
                 }
             }
         })
 
     }
+    onLoad() {
+        resources.load('RefreshSave', JsonAsset, (err, asset) => {
+            const data = asset.json;
+        });
+    }
 
-    private reelsEnd(winSymbols: string[]){
+    private reelsEnd(winSymbols: string[], isBonus: boolean = false){
         this.resultReelsSymbols[this.countEnds] = winSymbols;
         this.countEnds++;
-        if (this.countEnds == this.masks.length) {
+        if (this.countEnds == this.masks.length && !isBonus) {
             this.node.emit('reels-finished', this.resultReelsSymbols);
             this.scheduleOnce(() => {
                 this.setButtosInteractable(true);
             }, 0.3);
-
             this.countEnds = 0;
+            this.saveRefresh(this.resultReelsSymbols);
             this.resultReelsSymbols = [];
+
         }
     }
 
-    onSpinClick() {
-        if (!this.betController.spinBalanceUpdate()){
+    onSpinClick(cheat:number = 0, changeBalance: boolean = true) {
+        if (!this.betController.spinBalanceUpdate(changeBalance)){
             console.log("no hay saldo");
         }
         else{
             this.reels.forEach((reel, index)=> {
                 this.scheduleOnce(() => {
-                    reel.reelStartMovement(this.isCheating());
+                    if(cheat == 6){
+                        reel.reelStartMovement(cheat);
+                    }
+                    else{
+                        reel.reelStartMovement(this.isCheating());
+                    }
                 }, index * 0.4);
             });
             this.setButtosInteractable(false);
             this.prizesController.newSpinValue();
         }
     }
-    private setButtosInteractable(state: boolean) {
+    private setButtosInteractable(state: boolean,) {
         this.spinButton.interactable = state;
         if(!state){
             this.minuState = this.minusButton.interactable;
@@ -88,6 +102,13 @@ export class SlotController extends Component {
             this.plusButton.interactable = this.plusState;
             this.minusButton.interactable = this.minuState;
         }
+    }
+
+    saveRefresh(resultReelsSymbols: string[][]){
+        sys.localStorage.setItem(
+            "slotData",
+            JSON.stringify(resultReelsSymbols)
+        );
     }
     getSymbol() {
         const allChildren: Node[] = [];

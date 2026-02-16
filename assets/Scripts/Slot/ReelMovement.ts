@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Graphics, Vec3,  TweenSystem, Sprite, SpriteFrame} from 'cc';
+import { _decorator, Component, Node, tween, Graphics, Vec3,  TweenSystem, Sprite, SpriteFrame, sys} from 'cc';
 import {SymbolsRNG} from "db://assets/Scripts/Slot/SymbolsRNG";
 const { ccclass, property } = _decorator;
  
@@ -15,9 +15,34 @@ export class ReelMovement extends Component {
     private symbols: Node[] = [];
     private spinning: boolean = false;
     private winSymbols: string[]= [];
+    private reelIndex: number = -1;
 
+    initReel(index: number) {
+        this.reelIndex = index;
+    }
+    private getReelIndex(){
+        const data = sys.localStorage.getItem("slotData");
+        return JSON.parse(data)[this.reelIndex];
+    }
     start () {
         this.symbols = this.node.children;
+        let indexSave=0;
+        const restoreSym = this.getReelIndex();
+        for (let i = 0; i < this.symbols.length; i++) {
+            if(restoreSym && i > 1){
+                const savedName = restoreSym[indexSave];
+                const frame = this.spriteSymbolsFrames.find(f => f?.name === savedName) ?? null;
+                indexSave++;
+                const sprite = this.symbols[i].getComponent(Sprite) || this.symbols[i].addComponent(Sprite);
+                sprite.spriteFrame = frame;
+            }
+            else{
+                const randomIndex = SymbolsRNG.randomSymbol();
+                const sprite = this.symbols[i].getComponent(Sprite) || this.symbols[i].addComponent(Sprite);
+                sprite.spriteFrame = this.spriteSymbolsFrames[randomIndex];
+            }
+
+        }
     }
 
     reelStartMovement(cheat: number) {
@@ -76,7 +101,14 @@ export class ReelMovement extends Component {
                     symbol.setPosition(symbol.position.x, this.maxY, symbol.position.z);
                     let spriteFrame: SpriteFrame;
                     if (cheat>0){
-                        spriteFrame = this.spriteSymbolsFrames[cheat];
+                        if(cheat==6){
+                            const randomIndex = SymbolsRNG.randomBonus();
+                            spriteFrame = this.spriteSymbolsFrames[randomIndex];
+                        }
+                        else{
+                            spriteFrame = this.spriteSymbolsFrames[cheat];
+                        }
+
                     }
                     else{
                         const randomIndex = SymbolsRNG.randomSymbol();

@@ -1,5 +1,6 @@
 
 import { _decorator, Component, Node, Label } from 'cc';
+import {SlotController} from "db://assets/Scripts/Slot/SlotController";
 const { ccclass, property } = _decorator;
 
 @ccclass('PrizesController')
@@ -58,9 +59,18 @@ export class PrizesController extends Component {
     private resultLined(s1: string, s2: string, s3: string) {
         if(s1 == s2 && s2 == s3){
             const p = Number(s1[2]);
+            if( p == 4) this.bonusWin();
             return this.priceSimbols[p];
+
         }
         return 0;
+    }
+
+    private bonusWin(){
+        const slot = this.getComponent(SlotController);
+        this.scheduleOnce(() => {
+            slot.onSpinClick(6, false);
+        }, 1);
     }
 }
 
