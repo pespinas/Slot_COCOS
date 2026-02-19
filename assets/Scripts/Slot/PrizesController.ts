@@ -14,10 +14,12 @@ export class PrizesController extends Component {
     private priceSimbols: number[] = [0, 4, 6, 8, 12, 19, 30];
     private result: number = 0;
     private tier: number;
+    private slot;
 
     start () {
         this.node.on('reels-finished', this.checkPrizesOrder, this);
         this.node.on('reels-tier', this.checkTier, this);
+        this.slot = this.getComponent(SlotController);
     }
 
     private checkTier(tier: number) {
@@ -30,7 +32,7 @@ export class PrizesController extends Component {
             [resultReelsSymbols[0][2], resultReelsSymbols[1][2], resultReelsSymbols[2][2]]
         ];
         this.checkPrizes(result);
-
+        if(this.slot.bonusPending) this.bonusWin();
     }
 
     private checkPrizes(results: string[][]) {
@@ -43,6 +45,13 @@ export class PrizesController extends Component {
         }
         this.labelValue.string = String(this.result);
         this.balanceUpdate(Number(this.result));
+    }
+    private checkBonusRespin(results: string[]){
+
+    }
+
+    private checkBonusPrize(results: string[]){
+
     }
 
     private balanceUpdate(win: number){
@@ -59,7 +68,7 @@ export class PrizesController extends Component {
     private resultLined(s1: string, s2: string, s3: string) {
         if(s1 == s2 && s2 == s3){
             const p = Number(s1[2]);
-            if( p == 4) this.bonusWin();
+            if( p == 4) this.slot.bonusPending = true;
             return this.priceSimbols[p];
 
         }
@@ -67,8 +76,7 @@ export class PrizesController extends Component {
     }
 
     private bonusWin(){
-        const slot = this.getComponent(SlotController);
-        slot.bonusStart();
+        this.slot.bonusStart();
 
     }
 }

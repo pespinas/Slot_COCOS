@@ -29,7 +29,7 @@ export class SlotController extends Component {
     private resultReelsSymbols: string[][] = [];
     private minuState: boolean;
     private plusState: boolean;
-    private bonusPending: boolean = false;
+    public bonusPending: boolean = false;
 
     start () {
         this.prizesController = this.getComponent(PrizesController);
