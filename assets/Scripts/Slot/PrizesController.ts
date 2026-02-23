@@ -1,6 +1,7 @@
 
 import { _decorator, Component, Node, Label } from 'cc';
 import {SlotController} from "db://assets/Scripts/Slot/SlotController";
+import {BonusController} from "db://assets/Scripts/Slot/BonusController";
 const { ccclass, property } = _decorator;
 
 @ccclass('PrizesController')
@@ -15,6 +16,7 @@ export class PrizesController extends Component {
     private result: number = 0;
     private tier: number;
     private slot;
+
 
     start () {
         this.node.on('reels-finished', this.checkPrizesOrder, this);
@@ -31,8 +33,10 @@ export class PrizesController extends Component {
             [resultReelsSymbols[0][1], resultReelsSymbols[1][1], resultReelsSymbols[2][1]],
             [resultReelsSymbols[0][2], resultReelsSymbols[1][2], resultReelsSymbols[2][2]]
         ];
-        this.checkPrizes(result);
-        if(this.slot.bonusPending) this.bonusWin();
+        if(this.slot.bonusPending) this.node.emit('bonus-spin', result, this.tier);
+        else{
+            this.checkPrizes(result);
+        }
     }
 
     private checkPrizes(results: string[][]) {
@@ -45,13 +49,6 @@ export class PrizesController extends Component {
         }
         this.labelValue.string = String(this.result);
         this.balanceUpdate(Number(this.result));
-    }
-    private checkBonusRespin(results: string[]){
-
-    }
-
-    private checkBonusPrize(results: string[]){
-
     }
 
     private balanceUpdate(win: number){
@@ -70,14 +67,10 @@ export class PrizesController extends Component {
             const p = Number(s1[2]);
             if( p == 4) this.slot.bonusPending = true;
             return this.priceSimbols[p];
-
         }
         return 0;
     }
 
-    private bonusWin(){
-        this.slot.bonusStart();
 
-    }
 }
 

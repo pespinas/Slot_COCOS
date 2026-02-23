@@ -26,7 +26,7 @@
     "_prefab": null,
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 80
+      "__id__": 81
     },
     "_id": "d2bb4cd5-4254-4469-9c68-472e40999045"
   },
@@ -154,6 +154,9 @@
       },
       {
         "__id__": 79
+      },
+      {
+        "__id__": 80
       }
     ],
     "_prefab": null,
@@ -2821,21 +2824,32 @@
     "_id": "44Z8Fg6hFJGoqXcJjDx8C4"
   },
   {
+    "__type__": "1424cpcT8BD6andyERzjGKb",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 4
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_id": "c0A5NSXnpK2pe6AOTJTZNa"
+  },
+  {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 81
-    },
-    "shadows": {
       "__id__": 82
     },
-    "_skybox": {
+    "shadows": {
       "__id__": 83
     },
-    "fog": {
+    "_skybox": {
       "__id__": 84
     },
-    "octree": {
+    "fog": {
       "__id__": 85
+    },
+    "octree": {
+      "__id__": 86
     }
   },
   {

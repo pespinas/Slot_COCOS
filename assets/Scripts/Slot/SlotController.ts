@@ -76,6 +76,9 @@ export class SlotController extends Component {
             this.countEnds = 0;
             this.saveRefresh(this.resultReelsSymbols);
             this.resultReelsSymbols = [];
+            if(this.bonusPending){
+                this.bonusStart();
+            }
 
         }
     }
@@ -85,13 +88,9 @@ export class SlotController extends Component {
             console.log("no hay saldo");
         }
         else{
-
             this.reels.forEach((reel, index)=> {
                 this.scheduleOnce(() => {
-                    if(cheat == 6){
-                        reel.reelStartMovement(cheat);
-                        this.bonusPending = false;
-                    }
+                    if(this.bonusPending) reel.reelStartMovement(cheat);
                     else{
                         reel.reelStartMovement(this.isCheating());
                     }
