@@ -1,13 +1,20 @@
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec3,instantiate,Prefab} from 'cc';
 import {SlotController} from "db://assets/Scripts/Slot/SlotController";
 const { ccclass, property } = _decorator;
 
 @ccclass('BonusController')
 export class BonusController extends Component {
 
+    @property({ type: Prefab })
+    ssxPrefab: Prefab | null = null;
+    @property({ type: [Node] })
+    overlay = [];
+    private anyNewSSX: boolean = false;
     private slot;
     private bonusResult: string [][];
+
+
 
     start () {
         this.slot = this.getComponent(SlotController);
@@ -15,31 +22,50 @@ export class BonusController extends Component {
         this.node.on('bonus-spin', this.bonusSpin, this);
     }
     private bonusSpin(results: string[][], tier:number){
+        this.anyNewSSX = false;
         const columnsToCheck = [0, 1, 2];
         for (let i = 0; i < columnsToCheck.length; i++) {
             const column = results.map(row => row[i]);
             this.checkBonusPrize(column,i);
         }
+        this.slot.bonusPending = this.anyNewSSX;
+        if(!this.slot.bonusPending){
+            this.resetBonusFreeze();
+        }
     }
-    private checkBonusPrize(fila:string[], colIndex:number){
-        for (let i = 0; i < fila.length; i++) {
-            if (fila[i] === "SSX"){
+    private checkBonusPrize(column:string[], colIndex:number){
+        for (let i = 0; i < column.length; i++) {
+            if (column[i] === "SSX"){
                 this.checkWinAlready(i,colIndex);
             }
-            else{
-               this.slot.bonusPending = false;
+        }
+    }
+    private checkWinAlready(rowIndex: number, colIndex: number){
+
+        if(this.bonusResult[rowIndex][colIndex] != "SSX"){
+            this.bonusResult[rowIndex][colIndex] = "SSX";
+            this.bonusFreezer(colIndex, rowIndex);
+            this.anyNewSSX = true;
+        }
+    }
+    private bonusFreezer(colIndex: number, position: number){
+        const maskNode = this.overlay[colIndex];
+        const rowToY = [ 167, 0, -167 ];
+        const ssx = instantiate(this.ssxPrefab);
+        maskNode.addChild(ssx);
+        ssx.setPosition(new Vec3(0, rowToY[position], 1));
+    }
+    public resetBonusFreeze() {
+        this.overlay.forEach(mask => {
+            mask.children.forEach(child => child.destroy());
+        });
+        for (let i = 0; i < this.bonusResult.length; i++) {
+            for (let j = 0; j < this.bonusResult[i].length; j++) {
+                this.bonusResult[i][j] = "";
             }
         }
-
-    }
-    private checkWinAlready(position: number, colIndex: number){
-        let anyNewSSX = false;
-        if(this.bonusResult[colIndex][position] != "SSX"){
-            this.bonusResult[colIndex][position] = "SSX";
-            anyNewSSX = true;
-        }
-        if (anyNewSSX) this.slot.bonusPending = true;
     }
 
+    private
 }
 
