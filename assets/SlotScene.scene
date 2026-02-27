@@ -3138,6 +3138,10 @@
         "__id__": 24
       }
     ],
+    "ssxFrame": {
+      "__uuid__": "b8c4a064-8ee0-46af-846c-810529fd97de@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "_id": "c0A5NSXnpK2pe6AOTJTZNa"
   },
   {
