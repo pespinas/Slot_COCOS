@@ -22,6 +22,7 @@ export class BonusController extends Component {
         this.slot = this.getComponent(SlotController);
         this.bonusResult = Array.from({length: 3}, () => Array(3).fill(""));
         this.node.on('bonus-spin', this.bonusSpin, this);
+
     }
 
     private bonusSpin(results: string[][], tier: number) {
@@ -33,6 +34,7 @@ export class BonusController extends Component {
         }
         this.slot.bonusPending = this.anyNewSSX;
         if (!this.slot.bonusPending) {
+            this.node.emit('bonus-finished', this.bonusResult);
             this.scheduleOnce(() => {
                 this.fakeEndBonus();
                 this.resetBonusFreeze();

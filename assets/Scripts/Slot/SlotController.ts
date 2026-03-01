@@ -79,7 +79,6 @@ export class SlotController extends Component {
             if(this.bonusPending){
                 this.bonusStart();
             }
-
         }
     }
 
