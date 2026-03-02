@@ -30,6 +30,8 @@ export class SlotController extends Component {
     private minuState: boolean;
     private plusState: boolean;
     public bonusPending: boolean = false;
+    private reelNodes: Node[] = [];
+
 
     start () {
         this.prizesController = this.getComponent(PrizesController);
@@ -55,8 +57,14 @@ export class SlotController extends Component {
             const data = asset.json;
         });
     }
+    protected onDestroy(): void{
+        for (const reelNode of this.reelNodes) {
+            reelNode.off('end-reel', this.reelsEnd, this);
+        }
+        this.reelNodes = [];
+    }
 
-    bonusStart(){
+    private bonusStart(){
         this.bonusPending = true;
         this.setButtosInteractable(false);
         this.scheduleOnce(() => {
@@ -82,7 +90,7 @@ export class SlotController extends Component {
         }
     }
 
-    onSpinClick(cheat:number = 0, changeBalance: boolean = true) {
+    private onSpinClick(cheat:number = 0, changeBalance: boolean = true) {
         if (!this.betController.spinBalanceUpdate(changeBalance)){
             console.log("no hay saldo");
         }
@@ -116,20 +124,20 @@ export class SlotController extends Component {
         }
     }
 
-    saveRefresh(resultReelsSymbols: string[][]){
+    private saveRefresh(resultReelsSymbols: string[][]){
         sys.localStorage.setItem(
             "slotData",
             JSON.stringify(resultReelsSymbols)
         );
     }
-    getSymbol() {
+    private getSymbol() {
         const allChildren: Node[] = [];
         this.masks.forEach(mask => {
             allChildren.push(...mask.children);
         });
     }
 
-    isCheating(){
+    private isCheating(){
         const checkCheat = Number(this.cheat?.string ?? 0);
         if(checkCheat>0 && checkCheat<7){
             return checkCheat;

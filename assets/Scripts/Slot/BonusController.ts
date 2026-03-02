@@ -24,7 +24,9 @@ export class BonusController extends Component {
         this.node.on('bonus-spin', this.bonusSpin, this);
 
     }
-
+    protected onDestroy(): void {
+        this.node.off('bonus-spin', this.bonusSpin, this);
+    }
     private bonusSpin(results: string[][], tier: number) {
         this.anyNewSSX = false;
         const columnsToCheck = [0, 1, 2];

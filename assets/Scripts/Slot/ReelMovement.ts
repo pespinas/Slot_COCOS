@@ -17,7 +17,7 @@ export class ReelMovement extends Component {
     private winSymbols: string[]= [];
     private reelIndex: number = -1;
 
-    initReel(index: number) {
+    public initReel(index: number) {
         this.reelIndex = index;
     }
     private getReelIndex(){
@@ -45,7 +45,7 @@ export class ReelMovement extends Component {
         }
     }
 
-    reelStartMovement(cheat: number) {
+    public reelStartMovement(cheat: number) {
         this.spinning = true;
         this.winSymbols = [];
         this.symbols.slice().reverse().forEach((symbol, index) => {
@@ -55,7 +55,7 @@ export class ReelMovement extends Component {
             this.reelEndMovement();
         }, 4)
     }
-    reelEndMovement() {
+    private reelEndMovement() {
         this.spinning = false;
         this.symbols.forEach(symbol => {
             TweenSystem.instance.ActionManager.removeAllActionsFromTarget(symbol);
@@ -64,7 +64,7 @@ export class ReelMovement extends Component {
         this.eventEndReel();
     }
 
-    stopSymbol(){
+    private stopSymbol(){
         let newY: number = 668;
         let duration = 0.7;
         const orderedSymbols = this.symbols.slice().sort((a, b) => b.position.y - a.position.y);
@@ -86,7 +86,7 @@ export class ReelMovement extends Component {
         this.node.emit('end-reel',this.winSymbols);
     }
 
-    moveSymbol(symbol: Node, index: number, cheat: number) {
+    private moveSymbol(symbol: Node, index: number, cheat: number) {
         const startPosition = symbol.position.clone();
         const moveStep = () => {
             const distanceToTravel = symbol.position.y - this.minY;

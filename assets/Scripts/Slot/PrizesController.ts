@@ -25,6 +25,12 @@ export class PrizesController extends Component {
         this.slot = this.getComponent(SlotController);
     }
 
+    protected onDestroy(): void {
+        this.node.off('reels-finished', this.checkPrizesOrder, this);
+        this.node.off('bonus-finished', this.checkbonus, this);
+        this.node.off('reels-tier', this.checkTier, this);
+    }
+
     private checkTier(tier: number) {
         this.tier = tier;
     }
@@ -67,7 +73,7 @@ export class PrizesController extends Component {
         this.labelBalance.string = String(newBalance);
     }
 
-    newSpinValue(){
+    public newSpinValue(){
         this.result = 0;
         this.labelValue.string = String(this.result);
     }
@@ -75,7 +81,6 @@ export class PrizesController extends Component {
     private resultLined(s1: string, s2: string, s3: string) {
         if(s1 == s2 && s2 == s3){
             if(s1 == "SSX") return this.priceSimbols[7];
-
             const p = Number(s1[2]);
             if(p == 4) this.slot.bonusPending = true;
             return this.priceSimbols[p];
