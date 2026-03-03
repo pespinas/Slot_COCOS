@@ -50,7 +50,7 @@ export class SlotController extends Component {
                 }
             }
         })
-
+        this.node.on('bonus-isPending', this.bonusState, this);
     }
     onLoad() {
         resources.load('RefreshSave', JsonAsset, (err, asset) => {
@@ -63,7 +63,9 @@ export class SlotController extends Component {
         }
         this.reelNodes = [];
     }
-
+    private bonusState(state: boolean){
+        this.bonusPending = state;
+    }
     private bonusStart(){
         this.bonusPending = true;
         this.setButtosInteractable(false);
@@ -75,7 +77,7 @@ export class SlotController extends Component {
         this.resultReelsSymbols[this.countEnds] = winSymbols;
         this.countEnds++;
         if (this.countEnds == this.masks.length) {
-            this.node.emit('reels-finished', this.resultReelsSymbols);
+            this.node.emit('reels-finished', this.resultReelsSymbols, this.bonusPending);
             this.scheduleOnce(() => {
                 if (!this.bonusPending){
                     this.setButtosInteractable(true);

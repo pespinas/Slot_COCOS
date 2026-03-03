@@ -1,7 +1,5 @@
 
 import { _decorator, Component, Node, Label } from 'cc';
-import {SlotController} from "db://assets/Scripts/Slot/SlotController";
-import {BonusController} from "db://assets/Scripts/Slot/BonusController";
 const { ccclass, property } = _decorator;
 
 @ccclass('PrizesController')
@@ -15,14 +13,12 @@ export class PrizesController extends Component {
     private priceSimbols: number[] = [0, 4, 6, 8, 12, 19, 30, 50];
     private result: number = 0;
     private tier: number;
-    private slot;
 
 
     start () {
         this.node.on('reels-finished', this.checkPrizesOrder, this);
         this.node.on('bonus-finished', this.checkbonus, this);
         this.node.on('reels-tier', this.checkTier, this);
-        this.slot = this.getComponent(SlotController);
     }
 
     protected onDestroy(): void {
@@ -34,13 +30,13 @@ export class PrizesController extends Component {
     private checkTier(tier: number) {
         this.tier = tier;
     }
-    private checkPrizesOrder(resultReelsSymbols: string[][]){
+    private checkPrizesOrder(resultReelsSymbols: string[][], bonus: boolean = false){
         const result = [
             [resultReelsSymbols[0][0], resultReelsSymbols[1][0], resultReelsSymbols[2][0]],
             [resultReelsSymbols[0][1], resultReelsSymbols[1][1], resultReelsSymbols[2][1]],
             [resultReelsSymbols[0][2], resultReelsSymbols[1][2], resultReelsSymbols[2][2]]
         ];
-        if(this.slot.bonusPending) this.node.emit('bonus-spin', result, this.tier);
+        if(bonus) this.node.emit('bonus-spin', result, this.tier);
         else{
             this.checkPrizes(result);
         }
@@ -82,7 +78,7 @@ export class PrizesController extends Component {
         if(s1 == s2 && s2 == s3){
             if(s1 == "SSX") return this.priceSimbols[7];
             const p = Number(s1[2]);
-            if(p == 4) this.slot.bonusPending = true;
+            if(p == 4) this.node.emit('bonus-isPending', true);
             return this.priceSimbols[p];
         }
         return 0;

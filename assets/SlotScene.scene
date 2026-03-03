@@ -3138,6 +3138,17 @@
         "__id__": 24
       }
     ],
+    "masks": [
+      {
+        "__id__": 9
+      },
+      {
+        "__id__": 15
+      },
+      {
+        "__id__": 21
+      }
+    ],
     "ssxFrame": {
       "__uuid__": "b8c4a064-8ee0-46af-846c-810529fd97de@f9941",
       "__expectedType__": "cc.SpriteFrame"

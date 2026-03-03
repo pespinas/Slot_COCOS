@@ -10,16 +10,15 @@ export class BonusController extends Component {
     ssxPrefab: Prefab | null = null;
     @property({type: [Node]})
     overlay = [];
+    @property({ type: [Node] })
+    masks = [];
     @property({ type: SpriteFrame })
     ssxFrame: SpriteFrame | null = null;
     private anyNewSSX: boolean = false;
-    private slot;
     private bonusResult: string [][];
     private rowToY = [167, 0, -167];
 
-
     start() {
-        this.slot = this.getComponent(SlotController);
         this.bonusResult = Array.from({length: 3}, () => Array(3).fill(""));
         this.node.on('bonus-spin', this.bonusSpin, this);
 
@@ -34,8 +33,8 @@ export class BonusController extends Component {
             const column = results.map(row => row[i]);
             this.checkBonusPrize(column, i);
         }
-        this.slot.bonusPending = this.anyNewSSX;
-        if (!this.slot.bonusPending) {
+        this.node.emit('bonus-isPending', this.anyNewSSX);
+        if (!this.anyNewSSX) {
             this.node.emit('bonus-finished', this.bonusResult);
             this.scheduleOnce(() => {
                 this.fakeEndBonus();
@@ -83,8 +82,8 @@ export class BonusController extends Component {
     private fakeEndBonus() {
         const tolerance = 10;
 
-        for (let colIndex = 0; colIndex < this.slot.masks.length; colIndex++) {
-            const mask = this.slot.masks[colIndex];
+        for (let colIndex = 0; colIndex < this.masks.length; colIndex++) {
+            const mask = this.masks[colIndex];
             const reelNode = mask.children[0];
 
             for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
