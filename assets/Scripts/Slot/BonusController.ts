@@ -1,6 +1,5 @@
 
-import { _decorator, Component, Node, Vec3,instantiate,Prefab,SpriteFrame,Sprite} from 'cc';
-import {SlotController} from "db://assets/Scripts/Slot/SlotController";
+import { _decorator, Component, Node, Vec3,instantiate,Prefab,SpriteFrame,Sprite,NodePool} from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('BonusController')
@@ -14,6 +13,7 @@ export class BonusController extends Component {
     masks = [];
     @property({ type: SpriteFrame })
     ssxFrame: SpriteFrame | null = null;
+    private ssxPool: NodePool = new NodePool();
     private anyNewSSX: boolean = false;
     private bonusResult: string [][];
     private rowToY = [167, 0, -167];
@@ -21,10 +21,18 @@ export class BonusController extends Component {
     start() {
         this.bonusResult = Array.from({length: 3}, () => Array(3).fill(""));
         this.node.on('bonus-spin', this.bonusSpin, this);
+        this.initPoolSSX(9);
 
     }
     protected onDestroy(): void {
         this.node.off('bonus-spin', this.bonusSpin, this);
+        this.ssxPool.clear();
+    }
+    private initPoolSSX(count:number) {
+        for (let i = 0; i < count; i++) {
+            const ssx = instantiate(this.ssxPrefab);
+            this.ssxPool.put(ssx);
+        }
     }
     private bonusSpin(results: string[][], tier: number) {
         this.anyNewSSX = false;
@@ -63,14 +71,18 @@ export class BonusController extends Component {
 
     private bonusFreezer(colIndex: number, position: number) {
         const maskNode = this.overlay[colIndex];
-        const ssx = instantiate(this.ssxPrefab);
+        const ssx = this.ssxPool.get();
         maskNode.addChild(ssx);
         ssx.setPosition(new Vec3(0, this.rowToY[position], 1));
     }
 
     private resetBonusFreeze() {
         this.overlay.forEach(mask => {
-            mask.children.forEach(child => child.destroy());
+            const children = mask.children.slice();
+            children.forEach(child => {
+                child.removeFromParent();
+                this.ssxPool.put(child);
+            });
         });
         for (let i = 0; i < this.bonusResult.length; i++) {
             for (let j = 0; j < this.bonusResult[i].length; j++) {
